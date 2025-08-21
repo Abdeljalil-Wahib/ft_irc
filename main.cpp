@@ -1,7 +1,6 @@
 #include "Server.hpp"
 #include "Client.hpp"
 #include <iostream>
-#include <cstdlib> // atoi
 
 int main(int argc, char **argv)
 {

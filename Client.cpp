@@ -65,3 +65,13 @@ void Client::markRegistered()
 std::string Client::getFullMask() const {
 	return _nickname + "!" + _username + "@" + "ircserver";
 }
+
+const std::string& Client::getBuffer() const
+{
+    return _buffer;
+}
+
+void Client::setBuffer(const std::string& buffer)
+{
+    _buffer = buffer;
+}

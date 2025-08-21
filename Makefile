@@ -6,7 +6,8 @@ CXXFLAGS = -Wall -Wextra -Werror -std=c++98
 SRC =	main.cpp \
 		Server.cpp \
 		Client.cpp \
-		Channel.cpp
+		Channel.cpp \
+		OperatorCommands.cpp
 OBJ = $(SRC:.cpp=.o)
 
 all: $(NAME)

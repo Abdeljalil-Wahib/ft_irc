@@ -1,67 +1,82 @@
 #include "Channel.hpp"
 
-Channel::Channel(const std::string& name) : _name(name), _topic(""), _inviteOnly(false) {}
+Channel::Channel(const std::string &name) : _name(name),
+                                            _topic(""),
+                                            _key(""),
+                                            _userLimit(0),
+                                            _inviteOnly(false),
+                                            _topicProtected(true)
+{
+}
 
 Channel::~Channel() {}
 
-const std::string& Channel::getName() const
+const std::string &Channel::getName() const
 {
-	return _name;
+    return _name;
 }
 
-const std::string& Channel::getTopic() const
+const std::string &Channel::getTopic() const
 {
-	return _topic;
+    return _topic;
 }
 
-void Channel::setTopic(const std::string& topic)
+void Channel::setTopic(const std::string &topic)
 {
-	_topic = topic;
+    _topic = topic;
 }
 
-void Channel::addClient(Client* client)
+bool Channel::hasTopic() const
 {
-	_clients.insert(client);
+    return !_topic.empty();
 }
 
-void Channel::removeClient(Client* client)
+void Channel::addClient(Client *client)
 {
-	_clients.erase(client);
-	_operators.erase(client); // remove op status if they leave
+    _clients.insert(client);
 }
 
-bool Channel::hasClient(Client* client) const
+void Channel::removeClient(Client *client)
 {
-	return _clients.find(client) != _clients.end();
+    _clients.erase(client);
+    _operators.erase(client);
 }
 
-void Channel::addOperator(Client* client)
+bool Channel::hasClient(Client *client) const
 {
-	_operators.insert(client);
+    return _clients.find(client) != _clients.end();
 }
 
-bool Channel::isOperator(Client* client) const
+void Channel::addOperator(Client *client)
 {
-	return _operators.find(client) != _operators.end();
+    _operators.insert(client);
 }
 
-const std::set<Client*>& Channel::getClients() const
+bool Channel::isOperator(Client *client) const
 {
-	return _clients;
+    return _operators.find(client) != _operators.end();
 }
 
-
-void Channel::addInvited(Client *client) {
-	_invited.insert(client);
+const std::set<Client *> &Channel::getClients() const
+{
+    return _clients;
 }
 
-bool Channel::isInvited(Client *client) {
-	return (_invited.find(client) != _invited.end());
+void Channel::addInvited(Client *client)
+{
+    _invited.insert(client);
 }
 
-std::string Channel::getUserList() const {
+bool Channel::isInvited(Client *client) const
+{
+    return (_invited.find(client) != _invited.end());
+}
+
+std::string Channel::getUserList() const
+{
     std::string list;
-    for (std::set<Client*>::const_iterator it = _clients.begin(); it != _clients.end(); ++it) {
+    for (std::set<Client *>::const_iterator it = _clients.begin(); it != _clients.end(); ++it)
+    {
         if (isOperator(*it))
             list += "@" + (*it)->getNickname() + " ";
         else
@@ -72,11 +87,74 @@ std::string Channel::getUserList() const {
     return list;
 }
 
-
-void Channel::setInviteOnly(bool status) {
-	_inviteOnly = status;
+void Channel::setInviteOnly(bool status)
+{
+    _inviteOnly = status;
 }
 
-bool Channel::isInviteOnly() const {
-	return _inviteOnly;
+bool Channel::isInviteOnly() const
+{
+    return _inviteOnly;
+}
+
+void Channel::setTopicProtected(bool status)
+{
+    _topicProtected = status;
+}
+
+bool Channel::isTopicProtected() const
+{
+    return _topicProtected;
+}
+
+void Channel::removeOperator(Client *client)
+{
+    _operators.erase(client);
+}
+
+void Channel::setKey(const std::string &key)
+{
+    _key = key;
+}
+
+bool Channel::hasKey() const
+{
+    return !_key.empty();
+}
+
+const std::string &Channel::getKey() const
+{
+    return _key;
+}
+
+void Channel::setUserLimit(long limit)
+{
+    _userLimit = limit;
+}
+
+long Channel::getUserLimit() const
+{
+    return _userLimit;
+}
+
+std::string Channel::getModes() const
+{
+    std::string modes = "+";
+    std::string params = "";
+
+    if (_inviteOnly)
+        modes += 'i';
+    if (_topicProtected)
+        modes += 't';
+
+    if (_userLimit > 0)
+    {
+        modes += 'l';
+        std::ostringstream oss;
+        oss << _userLimit;
+        params += " " + oss.str();
+    }
+    if (modes.length() == 1)
+        return "";
+    return modes + params;
 }
